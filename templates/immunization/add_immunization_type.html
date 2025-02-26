@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Add Immunization Type</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Add Immunization</button>
+</form>
+
+<h3>Existing Immunizations</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Applicable Categories</th>
+            <th>Eligibility Period (Months)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for immunization in immunizations %}
+        <tr>
+            <td>{{ immunization.name }}</td>
+            <td>{{ immunization.applicable_category }}</td>
+            <td>{{ immunization.eligibility_period }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No immunizations added yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

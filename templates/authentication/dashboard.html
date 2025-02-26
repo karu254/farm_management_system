@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+
+    <div id="wrapper">
+        
+
+
+        <!-- Main Content -->
+        <div class="content">
+            <h2 class="mb-4">Dashboard Overview</h2>
+
+            <!-- Statistics Overview -->
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="card shadow-sm p-2 mb-4 stat-card">
+                        <h5><i class="fa-solid fa-cow"></i> Total Animals</h5>
+                        {% comment %} <h5>Total Animals</h5> {% endcomment %}
+                        <h3>{{ total_animals }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card shadow-sm p-2 mb-4 stat-card">
+                        <h5><i class="fa-solid fa-baby"></i> Calves</h5>
+                        {% comment %} <h5>Calves</h5> {% endcomment %}
+                        <h3>{{calves}}</h3>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card shadow-sm p-2 mb-4 stat-card">
+                        <h5><i class="fa-solid fa-mug-hot"></i> Milking Cows</h5>
+                        {% comment %} <h5>Milking Cows</h5> {% endcomment %}
+                        <h3>{{ milking_cows }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card shadow-sm p-2 mb-4 stat-card">
+                        <h5><i class="fa-solid fa-hippo"></i> Bulls</h5>
+                        {% comment %} <h5>Bulls</h5> {% endcomment %}
+                        <h3>{{ bulls }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card shadow-sm p-2 mb-4 stat-card">
+                        {% comment %} <h5>Milk</h5> {% endcomment %}
+                        <h5><i class="fa-solid fa-glass-whiskey"></i> Milk (L)</h5>
+
+                        <h3>{{ daily_milk }}</h3>
+                    </div>
+                </div>
+            </div>
+<br>
+
+
+
+
+            <div class="row">
+    <!-- Milk Production Chart -->
+    <div class="col-md-6 d-flex align-items-stretch">
+        <div class="card p-3 shadow-sm w-100">
+            <h5>Milk Production (Past Week)</h5>
+            <canvas id="milkChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Animal Distribution Doughnut Chart -->
+    <div class="col-md-6 d-flex align-items-stretch">
+        <div class="card p-3 shadow-sm w-100">
+            <h5>Animal Distribution</h5>
+            <canvas id="animalChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<br>
+
+
+
+
+            <!-- Milk Production Chart -->
+             <div class="row">
+                <div class="col-md-6">
+                    <div class="card p-3 shadow-sm mb-4">
+                        <h5>Another graph coming soon 😉</h5>
+                        <canvas id="milkChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Animal Distribution Pie Chart -->
+                <div class="col-md-6">
+                    <div class="card p-3 shadow-sm">
+                        <h5>Another graph coming soon 😉</h5>
+
+                        <canvas id="animalChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Data for Charts -->
+<script id="week-days" type="application/json">{{ week_days|safe }}</script>
+<script id="milk-data" type="application/json">{{ milk_data|safe }}</script>
+<script id="animal-data" type="application/json">{{ total_animals|safe }}, {{ calves|safe }}, {{ milking_cows|safe }}, {{ bulls|safe }}</script>
+
+<script>
+    // ✅ Read JSON Data from Django Context
+    let weekDays = JSON.parse('{{ week_days|safe }}');
+    let milkData = JSON.parse('{{ milk_data|safe }}');
+    let animalData = [{{ calves }}, {{ milking_cows }}, {{ bulls }}];
+
+    // ✅ Milk Production Chart
+    var milkCtx = document.getElementById('milkChart').getContext('2d');
+    var milkChart = new Chart(milkCtx, {
+        type: 'line',
+        data: {
+            labels: weekDays,
+            datasets: [{
+                label: 'Milk Produced (Liters)',
+                data: milkData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }]
+        }
+    });
+
+    // ✅ Animal Distribution Pie Chart
+    var animalCtx = document.getElementById('animalChart').getContext('2d');
+    var animalChart = new Chart(animalCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ["Calves", "Milking Cows", "Bulls"],
+            datasets: [{
+                data: animalData,
+                backgroundColor: ['#28a745', '#007bff', '#6c757d', '#ff7f00']
+            }]
+        }
+    });
+</script>
+
+
+
+</body>
+</html>
+{% endblock %}

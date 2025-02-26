@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Milk Records</h2>
+    <a href="{% url 'add_milk_record' %}" class="btn btn-success mb-3">Add Milk Record</a>
+
+    <!-- Filter and Search Form -->
+    <form method="GET" class="row g-3 mb-3">
+        <div class="col-md-3">
+            <input type="date" name="start_date" value="{{ start_date }}" class="form-control" placeholder="Start Date">
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="end_date" value="{{ end_date }}" class="form-control" placeholder="End Date">
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Search by Tag Number">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'milk_record_list' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
+    <!-- Milk Records Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Cow</th>
+                <th>Tag Number</th>
+                <th>Date</th>
+                <th>Quantity (L)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in milk_records %}
+            <tr>
+                <td>{{ record.cow.name }}</td>
+                <td>{{ record.cow.tag_number }}</td>
+                <td>{{ record.date }}</td>
+                <td>{{ record.quantity }}</td>
+                <td>
+                    <a href="{% url 'edit_milk_record' record.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'delete_milk_record' record.id %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if milk_records.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ milk_records.previous_page_number }}">Previous</a></li>
+            {% endif %}
+
+            <li class="page-item active"><span class="page-link">{{ milk_records.number }}</span></li>
+
+            {% if milk_records.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ milk_records.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ milk_records.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

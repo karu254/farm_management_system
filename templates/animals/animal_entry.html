@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Animal Details</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center text-primary mb-4">Enter Animal Details</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Animal Name:</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tag Number:</label>
+                        <input type="text" name="tag_number" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Birth:</label>
+                        <input type="date" name="dob" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Gender:</label>
+                        <select name="gender" class="form-select" id="genderSelect" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Category:</label>
+                        <input type="text" id="category" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6" id="milkingStatusContainer" style="display: none;">
+                        <label class="form-label">Milking Status:</label>
+                        <select name="milking_status" class="form-select">
+                            <option value="Not Milking">Not Milking</option>
+                            <option value="Being Milked">Being Milked</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">Save Animal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('genderSelect').addEventListener('change', function() {
+            const gender = this.value;
+            const dob = document.querySelector('input[name="dob"]').value;
+            const categoryField = document.getElementById('category');
+            const milkingStatusContainer = document.getElementById('milkingStatusContainer');
+
+            if (dob) {
+                const birthYear = new Date(dob).getFullYear();
+                const currentYear = new Date().getFullYear();
+                const age = currentYear - birthYear;
+
+                if (age < 1) {
+                    categoryField.value = "Calf";
+                } else {
+                    categoryField.value = (gender === "Male") ? "Bull" : "Cow";
+                }
+            }
+
+            if (gender === "Female" && categoryField.value === "Cow") {
+                milkingStatusContainer.style.display = "block";
+            } else {
+                milkingStatusContainer.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

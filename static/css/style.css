@@ -1,0 +1,28 @@
+/* Ensure sidebar collapses by default */
+#sidebar {
+    width: 60px;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    position: fixed;
+    height: 100vh;
+}
+
+/* Expand sidebar on hover */
+#wrapper.expanded #sidebar {
+    width: 220px;
+}
+
+/* Adjust main content when sidebar expands */
+#wrapper {
+    display: flex;
+}
+
+#wrapper #content {
+    margin-left: 10px;
+    transition: margin-left 0.1s ease-in-out;
+    width: 100%;
+}
+
+#wrapper.expanded #content {
+    margin-left: 220px;
+}

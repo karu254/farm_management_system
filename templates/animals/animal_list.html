@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Animal List</h2>
+    <a href="{% url 'add_animal' %}" class="btn btn-success mb-3">Add Animal</a>
+    <form method="GET" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" class="form-control" placeholder="Search by tag number..." value="{{ search_query }}">
+        <select name="category" class="form-select">
+            <option value="">Filter by Category</option>
+            <option value="calf" {% if category == "calf" %}selected{% endif %}>Calf</option>
+            <option value="milking_cow" {% if category == "milking_cow" %}selected{% endif %}>Milking Cow</option>
+            <option value="bull" {% if category == "bull" %}selected{% endif %}>Bull</option>
+        </select>
+        <select name="gender" class="form-select">
+            <option value="">Filter by Gender</option>
+            <option value="M" {% if gender == "M" %}selected{% endif %}>Male</option>
+            <option value="F" {% if gender == "F" %}selected{% endif %}>Female</option>
+        </select>
+        <select name="health_status" class="form-select">
+            <option value="">Filter by Health Status</option>
+            <option value="healthy" {% if health_status == "healthy" %}selected{% endif %}>Healthy</option>
+            <option value="sick" {% if health_status == "sick" %}selected{% endif %}>Sick</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Apply</button>
+    </form>
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tag Number</th>
+                <th>Name</th>
+                <th>Birth Date</th>
+                <th>Gender</th>
+                <th>Category</th>
+                <th>Health Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for animal in animals %}
+            <tr>
+                <td>{{ animal.tag_number }}</td>
+                <td>{{ animal.name }}</td>
+                <td>{{ animal.birth_date }}</td>
+                <td>{{ animal.get_gender_display }}</td>
+                <td>{{ animal.get_category_display }}</td>
+                <td>{{ animal.health_status }}</td>
+                <td>
+                    <a href="{% url 'edit_animal' animal.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'delete_animal' animal.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination Controls -->
+    <nav>
+        <ul class="pagination">
+            {% if animals.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ animals.previous_page_number }}">Previous</a></li>
+            {% endif %}
+    
+            <li class="page-item disabled"><span class="page-link">Page {{ animals.number }} of {{ animals.paginator.num_pages }}</span></li>
+    
+            {% if animals.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ animals.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ animals.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+</div>
+{% endblock %}

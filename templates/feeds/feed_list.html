@@ -1,0 +1,96 @@
+<!-- feeds/templates/feeds/feed_list.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        table th, table td {
+            text-align: center;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-evenly;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h2 class="text-center mb-4">Feed List</h2>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Category</th>
+                    <th>Feed Name</th>
+                    <th>Quantity per Animal (kg/day)</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feed in feeds %}
+                    <tr>
+                        <td><a href="#" class="category-link" data-category="{{ feed.category }}">{{ feed.get_category_display }}</a></td>
+                        <td>{{ feed.feed_name }}</td>
+                        <td>{{ feed.quantity_per_animal }}</td>
+                        <td>{{ feed.description }}</td>
+                        <td>
+                            <a href="{% url 'edit_feed' feed.id %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'delete_feed' feed.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for displaying animal tag numbers -->
+    <div class="modal fade" id="animalTagModal" tabindex="-1" aria-labelledby="animalTagModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="animalTagModalLabel">Animal Tags</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="animal-tags">
+                    <!-- Animal tags will be shown here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".category-link").on("click", function(e){
+                e.preventDefault();
+                var category = $(this).data('category');
+
+                $.ajax({
+                    url: "{% url 'get_animal_tags_by_category' %}",
+                    data: { category: category },
+                    success: function(response) {
+                        // Show the tags in the modal
+                        $('#animal-tags').html(response.join('<br>'));
+                        $('#animalTagModal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

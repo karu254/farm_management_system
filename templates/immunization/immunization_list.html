@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immunization List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        table th, table td {
+            text-align: center;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-evenly;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h2 class="text-center mb-4">Immunization List</h2>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Category</th>
+                    <th>Vaccine</th>
+                    <th>Quantity per Animal (ml)</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for immunization in immunizations %}
+                    <tr>
+                        <td><a href="#" class="category-link" data-category="{{ immunization.category }}">{{ immunization.get_category_display }}</a></td> 
+                        <td>{{ immunization.immunization_name }}</td>
+                        <td>{{ immunization.quantity}}</td>
+                        <td>{{ immunization.description }}</td>
+                        <td>
+                            <a href="{% url 'edit_immunization' immunization.id %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'delete_immunization' immunization.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for displaying animal tag numbers -->
+    <div class="modal fade" id="animalTagModal" tabindex="-1" aria-labelledby="animalTagModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="animalTagModalLabel">Animal Tag Numbers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="animal-tags">
+                    <ul id="animalTagList" class="list-group">
+                        <!-- Animal tag numbers will be displayed here using JavaScript -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetching the animal tags by category when category is clicked
+            $(".category-link").on("click", function(e) {
+                e.preventDefault();
+                var category = $(this).data('category');
+
+                $.ajax({
+                    url: "{% url 'get_animal_tags_by_category' %}",
+                    data: { category: category },
+                    success: function(response) {
+                        // Generate checkboxes for each animal tag
+                        var tagListHtml = '';
+                        response.forEach(function(tag) {
+                            var isChecked = localStorage.getItem(tag) === 'true' ? 'checked' : '';  // Check localStorage for previously saved state
+                            tagListHtml += `
+                                <li class="list-group-item">
+                                    <input type="checkbox" class="animal-checkbox" id="checkbox-${tag}" data-tag="${tag}" ${isChecked}>
+                                    <label for="checkbox-${tag}">${tag}</label>
+                                </li>
+                            `;
+                        });
+                        $("#animalTagList").html(tagListHtml);
+                        $("#animalTagModal").modal("show");
+                    }
+                });
+            });
+
+            // Save checkbox state to localStorage
+            $(document).on('change', '.animal-checkbox', function() {
+                var tag = $(this).data('tag');
+                localStorage.setItem(tag, $(this).prop('checked'));  // Save the checkbox state
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

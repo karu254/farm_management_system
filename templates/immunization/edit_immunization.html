@@ -1,24 +1,22 @@
-{% extends 'base.html' %}
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Immunization</title>
+    <title>Edit Vaccine</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-4">
-        <h2 class="text-center">Add Immunization</h2>
+        <h2 class="text-center">Edit Vaccine</h2>
         <div class="card shadow p-4 rounded">
             <form method="POST">
                 {% csrf_token %}
-                {{ form.as_p }}  <!-- This renders the form fields with Bootstrap styling -->
-                <button type="submit" class="btn btn-primary w-100 mt-3">Add Immunization</button>
+                {{ form.as_p }} <!-- Render the form with Bootstrap styling -->
+                <button type="submit" class="btn btn-primary w-100 mt-3">Update Vaccine</button>
             </form>
         </div>
     </div>
+    
 </body>
 </html>
-{% endblock %}

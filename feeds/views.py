@@ -30,7 +30,7 @@ def feed_list(request):
     return render(request, 'feeds/feed_list.html', context)
 
 def get_animal_tags_by_category(request):
-    category = request.GET.get('category')
+    category = request.GET.get('category') # Get the category from the request
     animals = Animal.objects.filter(category=category)
     tag_numbers = [animal.tag_number for animal in animals]
 

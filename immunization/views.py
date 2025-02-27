@@ -1,74 +1,51 @@
-from django.shortcuts import render, redirect
-from .models import Immunization, ImmunizationRecord
-from .forms import ImmunizationTypeForm, ImmunizationRecordForm
-from django.contrib import messages
-from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Immunization
+from .forms import ImmunizationForm
+from django.http import JsonResponse
 from animals.models import Animal
-from django.db.models import F
-from datetime import timedelta
-
-
-
-
-
-
-
-
+from django.contrib import messages
 
 def add_immunization(request):
-    if request.method == 'POST':
-        # Process Immunization Type Form
-        immunization_form = ImmunizationTypeForm(request.POST)
-        immunization_record_form = ImmunizationRecordForm(request.POST)
-
-        if immunization_form.is_valid():
-            immunization_form.save()
-            messages.success(request, "Immunization Type added successfully!")
-
-        # Process Immunization Record Form
-        if immunization_record_form.is_valid():
-            immunization_record_form.save()
-            messages.success(request, "Immunization Record added successfully!")
-
-        return redirect('immunization_schedule')
+    if request.method == "POST":
+        form = ImmunizationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('immunization_list')  # After saving, redirect to immunization list page
     else:
-        immunization_form = ImmunizationTypeForm()
-        immunization_record_form = ImmunizationRecordForm()
+        form = ImmunizationForm()
 
-    return render(request, 'immunization/add_immunization.html', {
-        'immunization_form': immunization_form,
-        'immunization_record_form': immunization_record_form
-    })
+    return render(request, 'immunization/add_immunization.html', {'form': form})
 
-def immunization_schedule(request):
-    # Filter records for this week based on birthdate and category
-    today = timezone.now()
-    animals_due_for_immunization = Animal.objects.all()
-
-    records = ImmunizationRecord.objects.filter(immunized=False).filter(date_administered__gte=today - timedelta(days=7))
+def immunization_list(request):
+    immunizations = Immunization.objects.all()
 
     context = {
-        'animals_due_for_immunization': animals_due_for_immunization,
-        'immunization_records': records
+        'immunizations': immunizations
     }
-    return render(request, 'immunization/immunization_schedule.html', context)
+    return render(request, 'immunization/immunization_list.html', context)
 
-def immunization_records(request):
-    records = ImmunizationRecord.objects.all()
+def get_animal_tags_by_category(request):
+    category = request.GET.get('category')
+    animals = Animal.objects.filter(category=category)
+    tag_numbers = [animal.tag_number for animal in animals]
 
-    context = {
-        'immunization_records': records
-    }
-    return render(request, 'immunization/immunization_records.html', context)
+    return JsonResponse(tag_numbers, safe=False)
 
+def edit_immunization(request, immunization_id):
+    immunization = get_object_or_404(Immunization, id=immunization_id)  # Fetch the immunization by its ID
+    if request.method == "POST":
+        form = ImmunizationForm(request.POST, instance=immunization)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Immunization updated successfully!")
+            return redirect('immunization_list')  # Redirect to the immunization list page after updating
+    else:
+        form = ImmunizationForm(instance=immunization)  # Populate the form with existing data
 
+    return render(request, 'immunization/edit_immunization.html', {'form': form, 'immunization': immunization})
 
-# @login_required
-def immunization_records(request):
-    # Fetch all immunization records
-    immunization_records = ImmunizationRecord.objects.all()
-    
-    context = {
-        'immunization_records': immunization_records
-    }
-    return render(request, 'immunization/immunization_records.html', context)
+def delete_immunization(request, immunization_id):
+    immunization = get_object_or_404(Immunization, id=immunization_id)  # Fetch the immunization by ID
+    immunization.delete()
+    messages.success(request, "Immunization deleted successfully!")
+    return redirect('immunization_list')  # Redirect back to immunization list page after deletion

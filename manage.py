@@ -4,6 +4,10 @@ import os
 import sys
 
 
+# openai.api_key = "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"  # Replace with your actual API key
+
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'farm_management_system.settings')

@@ -47,3 +47,17 @@ class MilkRecord(models.Model):
 
     def __str__(self):
         return f"{self.cow.name} - {self.date}: {self.quantity}L"
+
+
+
+
+
+
+
+# filepath: c:\Users\user\farm_management_system\animals\models.py
+from django.db import models
+
+class AnimalImmunization(models.Model):
+    animal = models.ForeignKey('Animal', on_delete=models.CASCADE)
+    is_immunized = models.BooleanField(default=False)
+    immunization_date = models.DateField(null=True, blank=True)

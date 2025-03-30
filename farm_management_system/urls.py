@@ -27,4 +27,6 @@ urlpatterns = [
     path('animals/', include('animals.urls')), # This URL pattern is used to access the animal_management app
     path('immunization/', include('immunization.urls')), # This URL pattern is used to access the immunization app
     path('feeds/', include('feeds.urls')), # This URL pattern is used to access the feeds app
+    path('chatbot/', include('chatbot.urls')), # This URL pattern is used to access the chatbot app
+    path('notifications/', include('notifications.urls')) 
 ]
